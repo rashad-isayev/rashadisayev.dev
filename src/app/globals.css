@@ -1,0 +1,682 @@
+@import "tailwindcss";
+
+:root {
+  /* Design tokens: update these values to change the site-wide color system. */
+  --background: #0d0d0c;
+  --foreground: #f1efe8;
+  --muted: #a7a29a;
+  --soft: #1b1a18;
+  --border: #2b2925;
+  --surface: #141311;
+  --surface-muted: #191815;
+  --accent: #d8d0bf;
+  --accent-soft: #222018;
+  --shadow-soft: 0 18px 60px rgb(0 0 0 / 0.28);
+}
+
+@theme inline {
+  /* Tailwind v4 reads these variables and exposes them as utility colors. */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-soft: var(--soft);
+  --color-border: var(--border);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --font-sans: var(--font-inter);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+::selection {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+a {
+  text-underline-offset: 3px;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.12;
+}
+
+p,
+li {
+  line-height: 1.68;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.ambient-glow {
+  /* A fixed decorative layer: it should never intercept clicks on page content. */
+  pointer-events: none;
+  overflow: hidden;
+  background: var(--background);
+  contain: paint;
+}
+
+.ambient-glow::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background:
+    linear-gradient(180deg, rgb(13 13 12) 0%, rgb(13 13 12 / 0) 34%),
+    linear-gradient(90deg, rgb(13 13 12) 0%, rgb(13 13 12 / 0) 28%),
+    linear-gradient(270deg, rgb(13 13 12) 0%, rgb(13 13 12 / 0) 28%);
+  z-index: 8;
+}
+
+.ambient-glow::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.42'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  mix-blend-mode: soft-light;
+  opacity: 0.045;
+  z-index: 9;
+}
+
+.ambient-glow-canvas {
+  position: absolute;
+  inset: -12% -10% 28%;
+  display: block;
+  background:
+    radial-gradient(
+      circle at 30% 34% in oklab,
+      rgb(216 208 191 / 0.34) 0%,
+      rgb(216 208 191 / 0.16) 24%,
+      rgb(216 208 191 / 0.055) 52%,
+      rgb(216 208 191 / 0) 78%
+    ),
+    radial-gradient(
+      circle at 70% 24% in oklab,
+      rgb(45 212 191 / 0.26) 0%,
+      rgb(45 212 191 / 0.115) 28%,
+      rgb(45 212 191 / 0.04) 56%,
+      rgb(45 212 191 / 0) 80%
+    ),
+    radial-gradient(
+      circle at 18% 68% in oklab,
+      rgb(244 114 182 / 0.22) 0%,
+      rgb(244 114 182 / 0.09) 30%,
+      rgb(244 114 182 / 0.03) 58%,
+      rgb(244 114 182 / 0) 82%
+    ),
+    radial-gradient(
+      circle at 78% 74% in oklab,
+      rgb(129 140 248 / 0.24) 0%,
+      rgb(129 140 248 / 0.1) 28%,
+      rgb(129 140 248 / 0.034) 58%,
+      rgb(129 140 248 / 0) 84%
+    );
+  filter: blur(88px) saturate(1.04);
+  mix-blend-mode: screen;
+  opacity: 0.58;
+  transform: translate3d(0, 0, 0) scale(1.08);
+  will-change: transform, opacity;
+  z-index: 1;
+}
+
+.ambient-glow-orb {
+  /* Each orb gets its position, color, and animation from a specific modifier class below. */
+  position: absolute;
+  display: block;
+  border-radius: 9999px;
+  filter: blur(168px) saturate(1.04);
+  mix-blend-mode: screen;
+  opacity: var(--orb-opacity, 0.42);
+  transform: translate3d(0, 0, 0) scale(var(--orb-scale, 1));
+  will-change: transform, opacity;
+  z-index: 2;
+}
+
+.ambient-glow-one {
+  --orb-opacity: 0.3;
+  --orb-scale: 1;
+  left: 38%;
+  top: 27%;
+  width: min(56rem, 98vw);
+  height: min(56rem, 98vw);
+  background: radial-gradient(
+    circle in oklab,
+    rgb(216 208 191 / 0.18) 0%,
+    rgb(216 208 191 / 0.11) 34%,
+    rgb(216 208 191 / 0.036) 68%,
+    rgb(216 208 191 / 0) 100%
+  );
+}
+
+.ambient-glow-two {
+  --orb-opacity: 0.22;
+  --orb-scale: 0.94;
+  right: 2%;
+  top: 10%;
+  width: min(44rem, 82vw);
+  height: min(44rem, 82vw);
+  background: radial-gradient(
+    circle in oklab,
+    rgb(45 212 191 / 0.15) 0%,
+    rgb(45 212 191 / 0.085) 36%,
+    rgb(45 212 191 / 0.026) 70%,
+    rgb(45 212 191 / 0) 100%
+  );
+}
+
+.ambient-glow-three {
+  --orb-opacity: 0.2;
+  --orb-scale: 1.05;
+  left: -5%;
+  top: 38%;
+  width: min(48rem, 88vw);
+  height: min(48rem, 88vw);
+  background: radial-gradient(
+    circle in oklab,
+    rgb(244 114 182 / 0.13) 0%,
+    rgb(244 114 182 / 0.074) 36%,
+    rgb(244 114 182 / 0.024) 70%,
+    rgb(244 114 182 / 0) 100%
+  );
+}
+
+.ambient-glow-four {
+  --orb-opacity: 0.2;
+  --orb-scale: 0.9;
+  right: 20%;
+  bottom: 2%;
+  width: min(44rem, 78vw);
+  height: min(44rem, 78vw);
+  background: radial-gradient(
+    circle in oklab,
+    rgb(129 140 248 / 0.14) 0%,
+    rgb(129 140 248 / 0.076) 38%,
+    rgb(129 140 248 / 0.024) 72%,
+    rgb(129 140 248 / 0) 100%
+  );
+}
+
+.ambient-glow-five {
+  --orb-opacity: 0.16;
+  --orb-scale: 0.88;
+  left: 19%;
+  top: 4%;
+  width: min(38rem, 72vw);
+  height: min(38rem, 72vw);
+  background: radial-gradient(
+    circle in oklab,
+    rgb(251 191 36 / 0.11) 0%,
+    rgb(251 191 36 / 0.062) 38%,
+    rgb(251 191 36 / 0.02) 72%,
+    rgb(251 191 36 / 0) 100%
+  );
+}
+
+.ambient-glow-six {
+  --orb-opacity: 0.15;
+  --orb-scale: 0.78;
+  left: 54%;
+  top: 56%;
+  width: min(38rem, 68vw);
+  height: min(38rem, 68vw);
+  background: radial-gradient(
+    circle in oklab,
+    rgb(74 222 128 / 0.105) 0%,
+    rgb(74 222 128 / 0.056) 40%,
+    rgb(74 222 128 / 0.018) 74%,
+    rgb(74 222 128 / 0) 100%
+  );
+}
+
+.ambient-glow-radial {
+  position: absolute;
+  left: 50%;
+  bottom: 20%;
+  display: block;
+  width: min(58rem, 92vw);
+  height: 8rem;
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    rgb(255 255 255 / 0.36) 0%,
+    rgb(216 208 191 / 0.14) 40%,
+    rgb(13 13 12 / 0) 100%
+  );
+  filter: blur(62px);
+  opacity: 0.58;
+  transform: translate3d(-50%, 0, 0);
+  will-change: transform, opacity;
+  z-index: 3;
+}
+
+.ambient-glow-fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: block;
+  width: min(38rem, 50vw);
+  z-index: 7;
+}
+
+.ambient-glow-fade-left {
+  left: 0;
+  background: linear-gradient(90deg, rgb(13 13 12) 0%, rgb(13 13 12 / 0) 100%);
+}
+
+.ambient-glow-fade-right {
+  right: 0;
+  background: linear-gradient(270deg, rgb(13 13 12) 0%, rgb(13 13 12 / 0) 100%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Motion is only enabled for users who have not asked the OS to reduce animations. */
+  .page-reveal {
+    animation: page-reveal 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .layer-reveal {
+    animation: layer-reveal var(--layer-duration, 900ms)
+      cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--layer-delay, 0ms);
+  }
+
+  .layer-backdrop {
+    --layer-delay: 0ms;
+    --layer-duration: 1200ms;
+  }
+
+  .layer-nav {
+    --layer-delay: 90ms;
+    --layer-duration: 700ms;
+  }
+
+  .layer-avatar {
+    --layer-delay: 220ms;
+    --layer-duration: 850ms;
+  }
+
+  .layer-heading {
+    --layer-delay: 380ms;
+    --layer-duration: 900ms;
+  }
+
+  .layer-copy {
+    --layer-delay: 560ms;
+    --layer-duration: 760ms;
+  }
+
+  .layer-actions {
+    --layer-delay: 720ms;
+    --layer-duration: 680ms;
+  }
+
+  .layer-panel {
+    --layer-delay: 140ms;
+    --layer-duration: 820ms;
+  }
+
+  .stagger-1 {
+    animation-delay: 140ms;
+  }
+
+  .stagger-2 {
+    animation-delay: 300ms;
+  }
+
+  .stagger-3 {
+    animation-delay: 460ms;
+  }
+
+  .soft-float {
+    animation: soft-float 10s ease-in-out infinite;
+  }
+
+  .skeleton-shimmer {
+    animation: skeleton-shimmer 2.8s ease-in-out infinite;
+  }
+
+  .loading-ambient {
+    animation: loading-ambient 8s ease-in-out infinite;
+  }
+
+  .loading-shell {
+    animation: loading-shell 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .loading-avatar {
+    animation: loading-orbit 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .loading-step-1 {
+    animation-delay: 80ms;
+  }
+
+  .loading-step-2 {
+    animation-delay: 180ms;
+  }
+
+  .loading-step-3 {
+    animation-delay: 280ms;
+  }
+
+  .loading-step-4 {
+    animation-delay: 380ms;
+  }
+
+  .ambient-glow-canvas {
+    animation: ambient-canvas-drift 72s cubic-bezier(0.45, 0, 0.55, 1)
+      infinite;
+  }
+
+  .ambient-glow-radial {
+    animation: ambient-radial-breathe 48s cubic-bezier(0.45, 0, 0.55, 1)
+      infinite;
+  }
+
+  .ambient-glow-one {
+    animation: ambient-orb-one 54s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  }
+
+  .ambient-glow-two {
+    animation: ambient-orb-two 62s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  }
+
+  .ambient-glow-three {
+    animation: ambient-orb-three 68s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  }
+
+  .ambient-glow-four {
+    animation: ambient-orb-four 74s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  }
+
+  .ambient-glow-five {
+    animation: ambient-orb-five 59s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  }
+
+  .ambient-glow-six {
+    animation: ambient-orb-six 81s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  }
+}
+
+@keyframes page-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes layer-reveal {
+  /* CSS variables let each layer reuse this animation with different timing and movement. */
+  from {
+    opacity: 0;
+    transform: translateY(var(--layer-y, 14px)) scale(var(--layer-scale, 1));
+    filter: blur(var(--layer-blur, 6px));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes soft-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    opacity: 0.32;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.32;
+  }
+}
+
+@keyframes loading-ambient {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes loading-shell {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes loading-orbit {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.94);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes ambient-canvas-drift {
+  0%,
+  100% {
+    opacity: 0.52;
+    transform: translate3d(0, 0, 0) scale(1.08);
+  }
+  33% {
+    opacity: 0.62;
+    transform: translate3d(2.5%, -1.5%, 0) scale(1.12);
+  }
+  66% {
+    opacity: 0.56;
+    transform: translate3d(-2%, 1.5%, 0) scale(1.1);
+  }
+}
+
+@keyframes ambient-radial-breathe {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: translate3d(-50%, 0, 0) scale(1);
+  }
+  50% {
+    opacity: 0.64;
+    transform: translate3d(-50%, -2%, 0) scale(1.04);
+  }
+}
+
+@keyframes ambient-orb-one {
+  0%,
+  100% {
+    opacity: 0.22;
+    transform: translate3d(-52%, -14%, 0) scale(1);
+  }
+  22% {
+    opacity: 0.28;
+    transform: translate3d(-38%, -22%, 0) scale(1.07);
+  }
+  48% {
+    opacity: 0.32;
+    transform: translate3d(-31%, -3%, 0) scale(1.12);
+  }
+  73% {
+    opacity: 0.25;
+    transform: translate3d(-47%, 10%, 0) scale(1.04);
+  }
+  88% {
+    opacity: 0.3;
+    transform: translate3d(-59%, -1%, 0) scale(1.09);
+  }
+}
+
+@keyframes ambient-orb-two {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: translate3d(12%, -4%, 0) scale(0.94);
+  }
+  18% {
+    opacity: 0.22;
+    transform: translate3d(-8%, 8%, 0) scale(1.08);
+  }
+  44% {
+    opacity: 0.18;
+    transform: translate3d(-19%, 26%, 0) scale(1.15);
+  }
+  69% {
+    opacity: 0.24;
+    transform: translate3d(3%, 18%, 0) scale(1.02);
+  }
+  86% {
+    opacity: 0.2;
+    transform: translate3d(20%, 5%, 0) scale(1.1);
+  }
+}
+
+@keyframes ambient-orb-three {
+  0%,
+  100% {
+    opacity: 0.13;
+    transform: translate3d(-14%, 4%, 0) scale(1.05);
+  }
+  16% {
+    opacity: 0.18;
+    transform: translate3d(4%, -15%, 0) scale(0.98);
+  }
+  41% {
+    opacity: 0.22;
+    transform: translate3d(22%, -4%, 0) scale(1.11);
+  }
+  67% {
+    opacity: 0.16;
+    transform: translate3d(12%, 16%, 0) scale(1.02);
+  }
+  84% {
+    opacity: 0.2;
+    transform: translate3d(-7%, 22%, 0) scale(1.14);
+  }
+}
+
+@keyframes ambient-orb-four {
+  0%,
+  100% {
+    opacity: 0.13;
+    transform: translate3d(4%, 12%, 0) scale(0.9);
+  }
+  21% {
+    opacity: 0.18;
+    transform: translate3d(-12%, -3%, 0) scale(1.06);
+  }
+  47% {
+    opacity: 0.23;
+    transform: translate3d(-5%, -24%, 0) scale(1.12);
+  }
+  72% {
+    opacity: 0.17;
+    transform: translate3d(17%, -14%, 0) scale(0.98);
+  }
+  90% {
+    opacity: 0.21;
+    transform: translate3d(24%, 4%, 0) scale(1.08);
+  }
+}
+
+@keyframes ambient-orb-five {
+  0%,
+  100% {
+    opacity: 0.1;
+    transform: translate3d(-5%, -2%, 0) scale(0.88);
+  }
+  19% {
+    opacity: 0.14;
+    transform: translate3d(14%, 10%, 0) scale(1.04);
+  }
+  39% {
+    opacity: 0.17;
+    transform: translate3d(24%, 28%, 0) scale(1.12);
+  }
+  64% {
+    opacity: 0.12;
+    transform: translate3d(3%, 18%, 0) scale(0.96);
+  }
+  82% {
+    opacity: 0.16;
+    transform: translate3d(-18%, 8%, 0) scale(1.06);
+  }
+}
+
+@keyframes ambient-orb-six {
+  0%,
+  100% {
+    opacity: 0.09;
+    transform: translate3d(-8%, 4%, 0) scale(0.78);
+  }
+  17% {
+    opacity: 0.13;
+    transform: translate3d(12%, -12%, 0) scale(0.96);
+  }
+  36% {
+    opacity: 0.16;
+    transform: translate3d(26%, -2%, 0) scale(1.04);
+  }
+  58% {
+    opacity: 0.11;
+    transform: translate3d(18%, 21%, 0) scale(0.9);
+  }
+  79% {
+    opacity: 0.15;
+    transform: translate3d(-4%, 17%, 0) scale(1);
+  }
+  91% {
+    opacity: 0.1;
+    transform: translate3d(-18%, -6%, 0) scale(0.86);
+  }
+}

@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client"
+  // Generated Prisma types live inside src so the app can import them with project aliases.
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ProductType {
+  COURSE
+  BOOK
+  NOTE
+  TEMPLATE
+  OTHER
+}
+
+enum ProductStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum EntitlementStatus {
+  ACTIVE
+  REVOKED
+  EXPIRED
+}
+
+enum PurchaseStatus {
+  PENDING
+  PAID
+  REFUNDED
+  FAILED
+}
+
+model User {
+  id             String        @id @default(cuid())
+  email          String        @unique
+  name           String?
+  externalAuthId String?       @unique
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  purchases      Purchase[]
+  entitlements   Entitlement[]
+
+  @@map("users")
+}
+
+model Product {
+  id           String        @id @default(cuid())
+  slug         String        @unique
+  title        String
+  description  String?
+  type         ProductType
+  status       ProductStatus @default(DRAFT)
+  priceCents   Int?
+  currency     String        @default("USD")
+  publishedAt  DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  course       Course?
+  purchases    Purchase[]
+  entitlements Entitlement[]
+
+  // This index supports common catalog queries like "show published courses".
+  @@index([status, type])
+  @@map("products")
+}
+
+model Course {
+  id        String   @id @default(cuid())
+  productId String   @unique
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  summary   String?
+  lessons   Lesson[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("courses")
+}
+
+model Lesson {
+  id        String   @id @default(cuid())
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  slug      String
+  title     String
+  position  Int
+  isPreview Boolean  @default(false)
+  content   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Slugs only need to be unique inside their own course, not across every course.
+  @@unique([courseId, slug])
+  // Position is indexed because course pages usually load lessons in display order.
+  @@index([courseId, position])
+  @@map("lessons")
+}
+
+model Purchase {
+  id                  String         @id @default(cuid())
+  userId              String?
+  user                User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  productId           String
+  product             Product        @relation(fields: [productId], references: [id], onDelete: Restrict)
+  status              PurchaseStatus @default(PENDING)
+  amountCents         Int
+  currency            String         @default("USD")
+  paymentProvider     String
+  providerCheckoutId  String?        @unique
+  providerOrderId     String?        @unique
+  customerEmail       String?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  // These indexes make it fast to look up purchase history by customer or product.
+  @@index([userId, status])
+  @@index([productId, status])
+  @@map("purchases")
+}
+
+model Entitlement {
+  id        String            @id @default(cuid())
+  userId    String
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  status    EntitlementStatus @default(ACTIVE)
+  startsAt  DateTime          @default(now())
+  expiresAt DateTime?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  // One active access record per user/product keeps authorization checks simple.
+  @@unique([userId, productId])
+  // Expiry checks can use this index when scheduled jobs revoke old access.
+  @@index([status, expiresAt])
+  @@map("entitlements")
+}
+
+// Key/value settings are useful for small site controls that do not need a full model.
+model SiteSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@map("site_settings")
+}
