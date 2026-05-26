@@ -28,7 +28,7 @@ describe("blog star API", () => {
   });
 
   it("creates one anonymous star and syncs the post counter", async () => {
-    const { POST } = await import("./route");
+    const { POST } = await import("@/app/api/blog/[id]/star/route");
     const response = await POST(
       new Request("https://example.com/api/blog/post-1/star", {
         method: "POST",
@@ -51,7 +51,7 @@ describe("blog star API", () => {
   });
 
   it("removes the visitor star when unstarred", async () => {
-    const { POST } = await import("./route");
+    const { POST } = await import("@/app/api/blog/[id]/star/route");
     await POST(
       new Request("https://example.com/api/blog/post-1/star", {
         method: "POST",

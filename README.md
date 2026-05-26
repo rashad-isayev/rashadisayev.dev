@@ -16,7 +16,7 @@ Open [http://localhost:3000](http://localhost:3000).
 Create `.env` from `.env.example`.
 
 ```bash
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/rashadisayev?schema=public"
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
 ADMIN_PASSWORD_HASH="scrypt$..."
 ADMIN_SESSION_SECRET="at-least-32-random-characters"
 ```
