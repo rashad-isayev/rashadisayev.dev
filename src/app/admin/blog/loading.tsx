@@ -1,0 +1,5 @@
+import { AdminBlogIndexLoading } from "@/components/admin-page-loading";
+
+export default function Loading() {
+  return <AdminBlogIndexLoading />;
+}

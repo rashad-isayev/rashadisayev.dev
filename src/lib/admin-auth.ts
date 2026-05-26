@@ -175,7 +175,10 @@ export async function setAdminSession() {
 
 export async function clearAdminSession() {
   const cookieStore = await cookies();
-  cookieStore.delete(ADMIN_SESSION_COOKIE);
+  cookieStore.delete({
+    name: ADMIN_SESSION_COOKIE,
+    path: "/admin",
+  });
 }
 
 export async function assertAdminSession() {
@@ -191,6 +194,7 @@ export async function assertSameOrigin() {
   const origin = headerStore.get("origin");
   const host = headerStore.get("host");
 
+  // Mutating server actions must come from the deployed site, not a cross-site form post.
   if (!origin || !host) {
     throw new Error("Missing request origin.");
   }
@@ -213,6 +217,7 @@ export async function getRateLimitKey() {
   const userAgent = headerStore.get("user-agent") ?? "unknown";
 
   if (process.env.TRUST_PROXY_HEADERS === "true") {
+    // Only trust forwarded IP headers when the deployment has explicitly opted into it.
     const forwardedFor = headerStore.get("x-forwarded-for")?.split(",")[0]?.trim();
     const realIp = headerStore.get("x-real-ip")?.trim();
 
@@ -231,6 +236,7 @@ function parseLoginAttemptState(value: string | undefined) {
     const parsed = JSON.parse(value) as LoginAttemptState;
     return parsed && typeof parsed === "object" ? parsed : {};
   } catch {
+    // Corrupt rate-limit state should not block future logins forever.
     return {};
   }
 }
@@ -269,6 +275,7 @@ export async function isLoginRateLimited(key: string) {
   try {
     const state = await getLoginAttemptState();
 
+    // Clean expired buckets while checking the current one to keep the setting compact.
     for (const [stateKey, attempt] of Object.entries(state)) {
       if (attempt.resetAt <= now) {
         delete state[stateKey];
@@ -276,20 +283,42 @@ export async function isLoginRateLimited(key: string) {
     }
 
     const current = state[digest];
-
-    if (!current) {
-      state[digest] = { count: 1, resetAt: now + LOGIN_RATE_LIMIT_WINDOW_MS };
-      await setLoginAttemptState(state);
-      return false;
-    }
-
-    current.count += 1;
-    state[digest] = current;
     await setLoginAttemptState(state);
 
-    return current.count > MAX_LOGIN_ATTEMPTS;
+    return Boolean(current && current.count >= MAX_LOGIN_ATTEMPTS);
   } catch {
+    // If the limiter cannot be read, fail closed to protect the admin login.
     return true;
+  }
+}
+
+export async function recordFailedLoginAttempt(key: string) {
+  const secret = getSessionSecret();
+
+  if (!secret) {
+    return;
+  }
+
+  const now = Date.now();
+  const digest = digestRateLimitKey(key, secret);
+
+  try {
+    const state = await getLoginAttemptState();
+    const current = state[digest];
+
+    if (!current || current.resetAt <= now) {
+      // A new window starts after the old one expires.
+      state[digest] = { count: 1, resetAt: now + LOGIN_RATE_LIMIT_WINDOW_MS };
+    } else {
+      state[digest] = {
+        count: current.count + 1,
+        resetAt: current.resetAt,
+      };
+    }
+
+    await setLoginAttemptState(state);
+  } catch {
+    return;
   }
 }
 

@@ -2,6 +2,5 @@
 export const NAVIGATION_ITEMS = [
   { href: "/", label: "Home" },
   { href: "/blog", label: "Blog" },
-  { href: "/projects", label: "Projects" },
-  { href: "/courses", label: "Courses" },
+  { href: "/contact", label: "Contact" },
 ] as const;

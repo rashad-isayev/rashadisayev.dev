@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
 import { PAGE_CONSTRUCTION_ITEMS } from "@/constants/page-construction";
 import { getAdminSession, isAdminConfigured } from "@/lib/admin-auth";
 import { getPageConstructionStatuses } from "@/lib/site-settings";
+import { AdminSubmitButton } from "../admin-submit-button";
 import { updatePageConstructionStatuses } from "../actions";
 
 type ContentSettingsPageProps = {
@@ -30,7 +30,7 @@ export default async function ContentSettingsPage({
   const session = await getAdminSession();
 
   if (!configured || !session) {
-    redirect("/admin");
+    redirect("/admin/sign-in");
   }
 
   const statuses = await getPageConstructionStatuses();
@@ -40,7 +40,6 @@ export default async function ContentSettingsPage({
   return (
     <div>
       <div className="mb-8">
-        <p className="mb-3 text-sm text-muted">Settings</p>
         <h1 className="text-3xl font-semibold tracking-normal">
           Content system
         </h1>
@@ -71,7 +70,7 @@ export default async function ContentSettingsPage({
               {PAGE_CONSTRUCTION_ITEMS.map((item) => (
                 <label
                   key={item.slug}
-                  className="flex cursor-pointer items-start justify-between gap-4 rounded-md border border-border/80 bg-background/35 p-4 transition hover:border-accent/50 has-[:checked]:border-amber-300/70 has-[:checked]:bg-amber-300/10"
+                  className="admin-option flex cursor-pointer items-start justify-between gap-4 rounded-md border border-border/80 bg-background/35 p-4 hover:border-accent/45 has-[:checked]:border-amber-300/70 has-[:checked]:bg-amber-300/10 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/70 has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-offset-background"
                 >
                   <span>
                     <span className="block font-medium">{item.label}</span>
@@ -89,7 +88,9 @@ export default async function ContentSettingsPage({
               ))}
             </div>
 
-            <Button type="submit">Save page statuses</Button>
+            <AdminSubmitButton icon="save" pendingLabel="Saving statuses">
+              Save page statuses
+            </AdminSubmitButton>
           </div>
         </form>
       </div>

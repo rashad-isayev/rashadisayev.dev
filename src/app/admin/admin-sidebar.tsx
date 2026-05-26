@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  BriefcaseBusiness,
+  ArrowLeft,
+  CircleDot,
+  LayoutDashboard,
   FileText,
-  Globe2,
   LogOut,
-  ShieldCheck,
+  Newspaper,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -19,9 +20,14 @@ type AdminSidebarProps = {
 
 const sidebarItems = [
   {
+    href: "/admin",
+    label: "Dashboard",
+    icon: LayoutDashboard,
+  },
+  {
     href: "/admin/availability",
-    label: "Work availability",
-    icon: BriefcaseBusiness,
+    label: "Availability",
+    icon: CircleDot,
   },
   {
     href: "/admin/content",
@@ -29,14 +35,9 @@ const sidebarItems = [
     icon: FileText,
   },
   {
-    href: "/admin/security",
-    label: "Access & security",
-    icon: ShieldCheck,
-  },
-  {
-    href: "/admin/site",
-    label: "Site shell",
-    icon: Globe2,
+    href: "/admin/blog",
+    label: "Blog posts",
+    icon: Newspaper,
   },
 ];
 
@@ -50,12 +51,10 @@ export function AdminSidebar({ isSignedIn }: AdminSidebarProps) {
       <div className="flex items-center justify-between gap-3 px-2 py-2">
         <Link
           href="/"
-          className="flex min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-foreground transition hover:bg-soft"
+          className="admin-link flex min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-muted hover:bg-soft/85 hover:text-foreground focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
-          <span className="grid size-7 shrink-0 place-items-center rounded-md bg-foreground text-xs font-semibold text-background">
-            RI
-          </span>
-          <span className="truncate">Rashad Isayev</span>
+          <ArrowLeft aria-hidden="true" className="size-4 shrink-0" />
+          <span className="truncate">Back to homepage</span>
         </Link>
         {isSignedIn ? (
           <form action={logoutAdmin}>
@@ -63,7 +62,7 @@ export function AdminSidebar({ isSignedIn }: AdminSidebarProps) {
               variant="ghost"
               size="icon"
               aria-label="Sign out"
-              className="size-8"
+              className="size-8 hover:text-foreground"
             >
               <LogOut aria-hidden="true" className="size-4" />
             </Button>
@@ -74,16 +73,17 @@ export function AdminSidebar({ isSignedIn }: AdminSidebarProps) {
       <nav className="mt-3 flex gap-1 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
         {sidebarItems.map((item) => {
           const Icon = item.icon;
-          const active = pathname === item.href;
+          const active =
+            pathname === item.href || pathname.startsWith(`${item.href}/`);
 
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex min-w-max items-center gap-2 rounded-md px-3 py-2 text-sm transition lg:min-w-0 ${
+              className={`admin-link flex min-w-max items-center gap-2 rounded-md px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background lg:min-w-0 ${
                 active
-                  ? "bg-accent-soft text-foreground"
-                  : "text-muted hover:bg-soft hover:text-foreground"
+                  ? "bg-accent-soft text-foreground shadow-[inset_0_1px_0_rgb(255_255_255_/_0.035)]"
+                  : "text-muted hover:bg-soft/85 hover:text-foreground"
               }`}
             >
               <Icon aria-hidden="true" className="size-4 shrink-0" />

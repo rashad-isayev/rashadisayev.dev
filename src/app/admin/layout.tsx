@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { AmbientGlow } from "@/components/ambient-glow";
-import { getAdminSession } from "@/lib/admin-auth";
+import { getAdminSession, isAdminConfigured } from "@/lib/admin-auth";
 import { AdminSidebar } from "./admin-sidebar";
 
 export const metadata: Metadata = {
@@ -15,24 +15,38 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }>) {
   const session = await getAdminSession();
+  const showDashboardShell = isAdminConfigured() && Boolean(session);
 
   return (
     <main className="relative min-h-screen overflow-hidden px-4 py-4 sm:px-6 sm:py-6">
       <AmbientGlow className="layer-reveal layer-backdrop absolute inset-0 opacity-70" />
 
-      <div className="layer-reveal layer-panel relative z-10 mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-7xl flex-col rounded-lg border border-border/70 bg-background/50 shadow-[var(--shadow-soft)] backdrop-blur-2xl sm:min-h-[calc(100vh-3rem)] lg:flex-row">
-        <AdminSidebar isSignedIn={Boolean(session)} />
+      <div
+        className={`layer-reveal layer-panel relative z-10 mx-auto flex min-h-[calc(100vh-2rem)] w-full flex-col rounded-lg border border-border/70 bg-background/50 shadow-[var(--shadow-soft)] backdrop-blur-2xl sm:min-h-[calc(100vh-3rem)] ${
+          showDashboardShell ? "max-w-7xl lg:flex-row" : "max-w-xl"
+        }`}
+      >
+        {showDashboardShell ? <AdminSidebar isSignedIn /> : null}
 
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="flex items-center justify-between gap-4 border-b border-border/70 px-5 py-4 text-sm sm:px-7">
-            <Link href="/" className="text-muted transition hover:text-foreground">
+            <Link
+              href="/"
+              className="admin-link rounded-md px-2 py-1 text-muted hover:bg-soft/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
               Rashad Isayev
             </Link>
             <span className="text-muted">Admin</span>
           </header>
 
           <section className="flex flex-1 overflow-y-auto px-5 py-7 sm:px-7 lg:px-10">
-            <div className="mx-auto w-full max-w-4xl">{children}</div>
+            <div
+              className={`mx-auto w-full ${
+                showDashboardShell ? "max-w-4xl" : "max-w-md"
+              }`}
+            >
+              {children}
+            </div>
           </section>
         </div>
       </div>

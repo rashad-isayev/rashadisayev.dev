@@ -1,5 +1,5 @@
-import { PublicPageLoading } from "@/components/public-page-loading";
+import { BlogIndexLoading } from "@/components/public-page-loading";
 
 export default function Loading() {
-  return <PublicPageLoading />;
+  return <BlogIndexLoading />;
 }

@@ -2,11 +2,39 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   async headers() {
+    const isProduction = process.env.NODE_ENV === "production";
+    const scriptSrc = [
+      "script-src 'self' 'unsafe-inline'",
+      !isProduction ? "'unsafe-eval'" : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    const contentSecurityPolicy = [
+      "default-src 'self'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+      "object-src 'none'",
+      scriptSrc,
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: blob:",
+      "font-src 'self'",
+      "connect-src 'self'",
+      "manifest-src 'self'",
+      "worker-src 'self' blob:",
+      "upgrade-insecure-requests",
+    ].join("; ");
+
     const securityHeaders = [
-      {
-        key: "Content-Security-Policy",
-        value: "base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'",
-      },
+      ...(isProduction
+        ? [
+            {
+              key: "Content-Security-Policy",
+              value: contentSecurityPolicy,
+            },
+          ]
+        : []),
       {
         key: "Referrer-Policy",
         value: "strict-origin-when-cross-origin",

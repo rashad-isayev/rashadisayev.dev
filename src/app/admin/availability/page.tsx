@@ -30,9 +30,8 @@ export default async function AvailabilityPage({
   const configured = isAdminConfigured();
   const session = await getAdminSession();
 
-  // Admin pages protect themselves at the page level, even though mutations are protected too.
   if (!configured || !session) {
-    redirect("/admin");
+    redirect("/admin/sign-in");
   }
 
   const availability = await getWorkAvailability();
@@ -42,7 +41,6 @@ export default async function AvailabilityPage({
   return (
     <div>
       <div className="mb-8">
-        <p className="mb-3 text-sm text-muted">Settings</p>
         <h1 className="text-3xl font-semibold tracking-normal">
           Work availability
         </h1>
@@ -69,13 +67,12 @@ export default async function AvailabilityPage({
         >
           <div className="space-y-5 p-5 sm:p-6">
             <fieldset className="grid gap-3 sm:grid-cols-2">
-              <label className="cursor-pointer rounded-md border border-border/80 bg-background/35 p-4 transition hover:border-accent/50 has-[:checked]:border-emerald-400/70 has-[:checked]:bg-emerald-400/10">
+              <label className="admin-option cursor-pointer rounded-md border border-border/80 bg-background/35 p-4 transition hover:border-accent/50 has-[:checked]:border-emerald-400/70 has-[:checked]:bg-emerald-400/10">
                 <input
                   className="sr-only"
                   type="radio"
                   name="availability"
                   value="available"
-                  // defaultChecked keeps this as a plain HTML form instead of client-side state.
                   defaultChecked={availability.isAvailable}
                 />
                 <span className="flex items-center gap-3 font-medium">
@@ -87,7 +84,7 @@ export default async function AvailabilityPage({
                 </span>
               </label>
 
-              <label className="cursor-pointer rounded-md border border-border/80 bg-background/35 p-4 transition hover:border-accent/50 has-[:checked]:border-amber-300/70 has-[:checked]:bg-amber-300/10">
+              <label className="admin-option cursor-pointer rounded-md border border-border/80 bg-background/35 p-4 transition hover:border-accent/50 has-[:checked]:border-amber-300/70 has-[:checked]:bg-amber-300/10">
                 <input
                   className="sr-only"
                   type="radio"

@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/constants/site";
+
 import "./globals.css";
 
 const inter = Inter({
@@ -13,12 +16,26 @@ export const metadata: Metadata = {
   // The template is used by child routes that set their own title.
   // Example: "Admin" becomes "Admin | Rashad Isayev".
   title: {
-    default: "Rashad Isayev",
-    template: "%s | Rashad Isayev",
+    default: SITE_NAME,
+    template: `%s | ${SITE_NAME}`,
   },
-  description:
-    "Personal platform for Rashad Isayev: writing, projects, courses, books, and notes.",
-  metadataBase: new URL("https://rashadisayev.com"),
+  description: SITE_DESCRIPTION,
+  metadataBase: new URL(SITE_URL),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    siteName: SITE_NAME,
+    type: "website",
+    url: SITE_URL,
+  },
+  twitter: {
+    card: "summary",
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export default function RootLayout({

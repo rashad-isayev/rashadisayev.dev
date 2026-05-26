@@ -5,15 +5,16 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium outline-none transition-all duration-200 ease-out focus-visible:ring-2 focus-visible:ring-accent/70 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium outline-none transition-[background-color,border-color,color,box-shadow,transform,opacity] duration-150 ease-out focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background active:translate-y-px disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         default:
-          "bg-foreground text-background shadow-sm hover:-translate-y-0.5 hover:bg-foreground/85 hover:shadow-md",
-        ghost: "text-muted hover:bg-soft hover:text-foreground",
+          "bg-foreground text-background shadow-sm hover:bg-foreground/90 hover:shadow-[0_8px_22px_rgb(0_0_0_/_0.22)] active:bg-foreground/80 active:shadow-sm",
+        ghost:
+          "text-muted hover:bg-soft/90 hover:text-foreground active:bg-soft",
         outline:
-          "border border-border bg-surface/60 text-foreground hover:-translate-y-0.5 hover:bg-surface hover:shadow-sm",
+          "border border-border bg-surface/60 text-foreground hover:border-accent/35 hover:bg-surface hover:shadow-sm active:bg-surface-muted",
       },
       size: {
         default: "h-10 px-4 py-2",

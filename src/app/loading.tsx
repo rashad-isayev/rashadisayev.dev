@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Loading() {
   return (
-    <main className="relative min-h-screen overflow-hidden px-6 py-5 sm:px-8 sm:py-8">
+    <main className="relative min-h-screen overflow-hidden px-6 pt-5 sm:px-8 sm:pt-8">
       <div className="mx-auto flex min-h-[calc(100vh-2.5rem)] w-full max-w-4xl flex-col sm:min-h-[calc(100vh-4rem)]">
         <header className="sticky top-0 z-10 -mx-4 px-4 py-4 text-sm sm:-mx-6 sm:px-6">
           <div className="flex min-h-10 items-center justify-center">
@@ -39,6 +39,11 @@ export default function Loading() {
               <Skeleton className="loading-step-2 h-5 w-full" />
               <Skeleton className="loading-step-3 mx-auto h-5 w-10/12" />
               <Skeleton className="loading-step-4 mx-auto h-5 w-8/12" />
+            </div>
+
+            <div className="loading-step-4 flex w-full flex-col items-center justify-center gap-3 sm:mx-auto sm:w-auto sm:flex-row">
+              <Skeleton className="h-10 w-full rounded-md sm:w-36" />
+              <Skeleton className="h-10 w-full rounded-md sm:w-32" />
             </div>
           </div>
         </section>

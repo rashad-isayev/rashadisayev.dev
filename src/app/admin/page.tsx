@@ -1,110 +1,153 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Lock } from "lucide-react";
+import { BarChart3, FileText, PencilLine, Star } from "lucide-react";
 
+import { getAdminSession, isAdminConfigured } from "@/lib/admin-auth";
+import { getBlogPostSummary } from "@/lib/content";
+import { getPageConstructionStatuses, getWorkAvailability } from "@/lib/site-settings";
+import { PAGE_CONSTRUCTION_ITEMS } from "@/constants/page-construction";
 import { Button } from "@/components/ui/button";
-import {
-  createAdminPasswordHashCommand,
-  createSessionSecret,
-  getAdminSession,
-  isAdminConfigured,
-} from "@/lib/admin-auth";
-import { loginAdmin } from "./actions";
 
-type AdminPageProps = {
-  searchParams?: Promise<{
-    error?: string;
-  }>;
-};
+const numberFormatter = new Intl.NumberFormat("en");
 
-function getErrorMessage(error: string | undefined) {
-  switch (error) {
-    case "invalid":
-      return "The password was not accepted.";
-    case "rate-limited":
-      return "Too many login attempts. Try again later.";
-    case "not-configured":
-      return "Admin access is not configured yet.";
-    case "database":
-      return "The database connection is not configured correctly.";
-    default:
-      return null;
-  }
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: typeof FileText;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-lg border border-border/70 bg-surface/60 p-5">
+      <div className="flex items-center gap-3 text-muted">
+        <Icon aria-hidden className="size-4" />
+        <span className="text-sm">{label}</span>
+      </div>
+      <p className="mt-4 text-3xl font-semibold tracking-normal">{value}</p>
+    </div>
+  );
 }
 
-export default async function AdminPage({ searchParams }: AdminPageProps) {
-  const params = await searchParams;
-  const session = await getAdminSession();
+export default async function AdminPage() {
   const configured = isAdminConfigured();
-  const errorMessage = getErrorMessage(params?.error);
-  const showSetupCommands = !configured && process.env.NODE_ENV !== "production";
+  const session = await getAdminSession();
 
-  // Signed-in admins should not see the login screen again.
-  if (configured && session) {
-    redirect("/admin/availability");
+  if (!configured || !session) {
+    redirect("/admin/sign-in");
   }
 
+  const [summary, availability, constructionStatuses] = await Promise.all([
+    getBlogPostSummary(),
+    getWorkAvailability(),
+    getPageConstructionStatuses(),
+  ]);
+
   return (
-    <div className="max-w-md">
+    <div>
       <div className="mb-8">
-        <p className="mb-3 text-sm text-muted">Admin dashboard</p>
-        <h1 className="text-3xl font-semibold tracking-normal">Sign in</h1>
+        <h1 className="text-3xl font-semibold tracking-normal">Dashboard</h1>
+        <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
+          Quick platform state across content, availability, engagement, and
+          page launch controls.
+        </p>
       </div>
 
-      {!configured ? (
-        <div className="space-y-5 rounded-lg border border-border/70 bg-surface/60 p-5 sm:p-6">
-          <div className="rounded-md border border-amber-300/25 bg-amber-300/10 p-4 text-sm text-amber-100">
-            Configure <code>ADMIN_PASSWORD_HASH</code> and{" "}
-            <code>ADMIN_SESSION_SECRET</code> before using the dashboard.
-          </div>
-          {showSetupCommands ? (
-            <div className="space-y-3 text-sm text-muted">
-              <p>Password hash command:</p>
-              <pre className="overflow-x-auto rounded-md border border-border bg-background/70 p-4 text-xs text-foreground">
-                {/* These generated values help bootstrap the app before admin auth is configured. */}
-                {createAdminPasswordHashCommand()}
-              </pre>
-              <p>Session secret example:</p>
-              <pre className="overflow-x-auto rounded-md border border-border bg-background/70 p-4 text-xs text-foreground">
-                {`ADMIN_SESSION_SECRET="${createSessionSecret()}"`}
-              </pre>
-            </div>
-          ) : null}
-        </div>
-      ) : (
-        <form
-          action={loginAdmin}
-          className="space-y-5 rounded-lg border border-border/70 bg-surface/60 p-5 sm:p-6"
-        >
-          {errorMessage ? (
-            <div className="rounded-md border border-amber-300/25 bg-amber-300/10 p-4 text-sm text-amber-100">
-              {errorMessage}
-            </div>
-          ) : null}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          icon={FileText}
+          label="Published"
+          value={numberFormatter.format(summary.publishedCount)}
+        />
+        <StatCard
+          icon={PencilLine}
+          label="Drafts"
+          value={numberFormatter.format(summary.draftCount)}
+        />
+        <StatCard
+          icon={BarChart3}
+          label="Archived"
+          value={numberFormatter.format(summary.archivedCount)}
+        />
+        <StatCard
+          icon={Star}
+          label="Top stars"
+          value={numberFormatter.format(summary.topStarredPosts[0]?.starCount ?? 0)}
+        />
+      </div>
 
-          <div>
-            <label htmlFor="password" className="text-sm font-medium">
-              Admin password
-            </label>
-            <div className="mt-2 flex rounded-md border border-border bg-background/50 px-3 focus-within:border-accent">
-              <Lock aria-hidden="true" className="mr-2 mt-3 size-4 text-muted" />
-              <input
-                id="password"
-                name="password"
-                type="password"
-                minLength={8}
-                required
-                autoComplete="current-password"
-                className="h-11 w-full bg-transparent text-foreground outline-none placeholder:text-muted"
-                placeholder="Enter your admin password"
-              />
-            </div>
+      <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]">
+        <section className="rounded-lg border border-border/70 bg-surface/60 p-5">
+          <div className="mb-4 flex items-center justify-between gap-4">
+            <h2 className="text-lg font-semibold tracking-normal">
+              Top content
+            </h2>
+            <Button asChild size="sm" variant="outline">
+              <Link href="/admin/blog">Manage</Link>
+            </Button>
           </div>
 
-          <Button type="submit" className="w-full">
-            Sign in
-          </Button>
-        </form>
-      )}
+          {summary.topStarredPosts.length > 0 ? (
+            <div className="divide-y divide-border/70">
+              {summary.topStarredPosts.map((post) => (
+                <Link
+                  key={post.id}
+                  href={`/admin/blog/${post.id}`}
+                  className="admin-link flex items-center justify-between gap-4 py-3 hover:bg-soft/35 focus-visible:ring-2 focus-visible:ring-accent/70"
+                >
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm">{post.title}</span>
+                    <span className="mt-1 block truncate text-xs text-muted">
+                      {post.slug}.md
+                    </span>
+                  </span>
+                  <span className="shrink-0 text-xs text-muted">
+                    {numberFormatter.format(post.starCount)} stars ·{" "}
+                    {numberFormatter.format(post.viewCount)} views
+                  </span>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted">No content metrics yet.</p>
+          )}
+        </section>
+
+        <aside className="space-y-5">
+          <section className="rounded-lg border border-border/70 bg-surface/60 p-5">
+            <h2 className="text-lg font-semibold tracking-normal">
+              Availability
+            </h2>
+            <p className="mt-3 text-sm text-muted">{availability.label}</p>
+            <Button asChild className="mt-4" size="sm" variant="outline">
+              <Link href="/admin/availability">Update</Link>
+            </Button>
+          </section>
+
+          <section className="rounded-lg border border-border/70 bg-surface/60 p-5">
+            <h2 className="text-lg font-semibold tracking-normal">
+              Page states
+            </h2>
+            <div className="mt-3 space-y-2 text-sm">
+              {PAGE_CONSTRUCTION_ITEMS.map((item) => (
+                <div
+                  key={item.slug}
+                  className="flex items-center justify-between gap-3"
+                >
+                  <span className="text-muted">{item.label}</span>
+                  <span>
+                    {constructionStatuses[item.slug] ? "construction" : "live"}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <Button asChild className="mt-4" size="sm" variant="outline">
+              <Link href="/admin/content">Configure</Link>
+            </Button>
+          </section>
+        </aside>
+      </div>
     </div>
   );
 }
