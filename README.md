@@ -2,6 +2,8 @@
 
 This is an open-source personal website. It includes a public homepage for brief introduction, a blog page for sharing articles of interest, a contact channel for quick navigation, and an admin dashboard for managing dynamic content. Website can be extended by adding pages for project/work demonstration, FAQ, and many more.
 
+<img width="400" alt="image" src="https://github.com/user-attachments/assets/4c2d4374-f44e-485c-bffc-856ca49aae7a" />
+
 
 ## Installation guide
 
