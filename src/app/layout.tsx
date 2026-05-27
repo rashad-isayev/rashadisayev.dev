@@ -15,12 +15,14 @@ const inter = Inter({
 export const metadata: Metadata = {
   // The template is used by child routes that set their own title.
   // Example: "Admin" becomes "Admin | Rashad Isayev".
+  applicationName: SITE_NAME,
   title: {
     default: SITE_NAME,
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
   metadataBase: new URL(SITE_URL),
+  manifest: "/site.webmanifest",
   alternates: {
     canonical: "/",
   },
@@ -29,8 +31,20 @@ export const metadata: Metadata = {
       { url: "/favicon.ico", sizes: "any" },
       { url: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
       { url: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
     ],
+    shortcut: ["/favicon.ico"],
     apple: [{ url: "/apple-touch-icon.png", type: "image/png", sizes: "180x180" }],
+    other: [{ rel: "apple-touch-icon-precomposed", url: "/apple-touch-icon-precomposed.png" }],
+  },
+  appleWebApp: {
+    capable: true,
+    title: SITE_NAME,
+    statusBarStyle: "black-translucent",
+  },
+  other: {
+    "msapplication-config": "/browserconfig.xml",
+    "msapplication-TileColor": "#080a12",
   },
   openGraph: {
     title: SITE_NAME,
