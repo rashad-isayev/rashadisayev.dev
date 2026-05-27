@@ -49,7 +49,7 @@ export default async function Home() {
 
             <div className="mt-7 max-w-3xl">
               <h1 className="layer-reveal layer-heading text-4xl font-semibold tracking-normal text-balance sm:text-6xl">
-                Building digital experiences with purpose
+                Building digital experiences
               </h1>
               <p className="layer-reveal layer-copy mx-auto mt-5 max-w-2xl text-base leading-8 text-muted">
                 I am Rashad Isayev, a developer and an entrepreneur, preparing learning materials
