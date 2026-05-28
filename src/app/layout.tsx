@@ -28,16 +28,16 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.ico?v=2", sizes: "any" },
-      { url: "/favicon-32x32.png?v=2", type: "image/png", sizes: "32x32" },
-      { url: "/favicon-16x16.png?v=2", type: "image/png", sizes: "16x16" },
-      { url: "/icon.png?v=2", type: "image/png", sizes: "512x512" },
+      { url: "/favicon-32x32.png?v=3", type: "image/png", sizes: "32x32" },
+      { url: "/favicon-16x16.png?v=3", type: "image/png", sizes: "16x16" },
+      { url: "/icon.png?v=3", type: "image/png", sizes: "512x512" },
+      { url: "/favicon.ico?v=3", sizes: "any" },
     ],
-    shortcut: ["/favicon.ico?v=2"],
-    apple: [{ url: "/apple-touch-icon.png?v=2", type: "image/png", sizes: "180x180" }],
+    shortcut: ["/favicon.ico?v=3"],
+    apple: [{ url: "/apple-touch-icon.png?v=3", type: "image/png", sizes: "180x180" }],
     other: [
-      { rel: "apple-touch-icon-precomposed", url: "/apple-touch-icon-precomposed.png?v=2" },
-      { rel: "mask-icon", url: "/safari-pinned-tab.svg?v=2", color: "#f8fafc" },
+      { rel: "apple-touch-icon-precomposed", url: "/apple-touch-icon-precomposed.png?v=3" },
+      { rel: "mask-icon", url: "/safari-pinned-tab.svg?v=3", color: "#f8fafc" },
     ],
   },
   appleWebApp: {
