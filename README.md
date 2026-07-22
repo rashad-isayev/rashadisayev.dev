@@ -2,6 +2,14 @@
 
 This is an open-source personal website. It includes a public homepage for brief introduction, a blog page for sharing articles of interest, a contact channel for quick navigation, and an admin dashboard for managing dynamic content. Website can be extended by adding pages for project/work demonstration, FAQ, and many more.
 
+## Version 2.0
+
+Version 2.0 is in its initial planning stage on the `codex/v2` branch. The current production site remains the stable baseline on `main`.
+
+- [V2 project brief](docs/v2/PROJECT_BRIEF.md)
+- [V2 delivery roadmap](docs/v2/ROADMAP.md)
+- [V2 decision log](docs/v2/DECISIONS.md)
+
 <img width="400" alt="image" src="https://github.com/user-attachments/assets/4c2d4374-f44e-485c-bffc-856ca49aae7a" />
 
 
