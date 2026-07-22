@@ -2,7 +2,7 @@
 
 ## Status
 
-Planning. The `main` branch is the stable v1 baseline; all v2 work begins on `codex/v2`.
+Planning. The `main` branch is the stable v1 baseline; all v2 work begins on `v2`.
 
 ## Product intent
 

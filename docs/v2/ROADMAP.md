@@ -6,7 +6,7 @@ This roadmap is outcome-based. Dates will be added after discovery establishes t
 
 Status: complete
 
-- Preserve v1 on `main` and isolate work on `codex/v2`.
+- Preserve v1 on `main` and isolate work on `v2`.
 - Record the current application surface and data model.
 - Verify the existing lint, test, and production-build gates.
 - Add continuous integration for pull requests and branch updates.
@@ -67,7 +67,7 @@ Exit criteria: launch checklist is signed off, production is verified, and rollb
 ## Working conventions
 
 - Keep `main` releasable.
-- Use short-lived branches from `codex/v2` for substantial milestones.
+- Use short-lived branches from `v2` for substantial milestones.
 - Require the quality workflow to pass before merging.
 - Record scope or architecture changes in `DECISIONS.md`.
 - Include acceptance criteria and screenshots for visible changes.

@@ -4,7 +4,7 @@ This is an open-source personal website. It includes a public homepage for brief
 
 ## Version 2.0
 
-Version 2.0 is in its initial planning stage on the `codex/v2` branch. The current production site remains the stable baseline on `main`.
+Version 2.0 is in its initial planning stage on the `v2` branch. The current production site remains the stable baseline on `main`.
 
 - [V2 project brief](docs/v2/PROJECT_BRIEF.md)
 - [V2 delivery roadmap](docs/v2/ROADMAP.md)

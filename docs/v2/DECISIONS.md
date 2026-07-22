@@ -6,7 +6,7 @@ Use this lightweight log for decisions that affect v2 scope, architecture, conte
 
 - Date: 2026-07-23
 - Status: accepted
-- Decision: Keep `main` as the stable v1 baseline and begin v2 on `codex/v2`.
+- Decision: Keep `main` as the stable v1 baseline and begin v2 on `v2`.
 - Reason: This allows maintenance releases and provides a clear rollback point while v2 evolves.
 
 ## D-002 — Mark the repository as a prerelease
